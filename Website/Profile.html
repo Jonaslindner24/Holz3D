@@ -93,6 +93,11 @@
         <div id="loading" class="loading-overlay">Lade gespeicherte Daten...</div>
 
         <div class="input-group">
+            <label>Name</label>
+            <input type="text" id="name" placeholder="Max mustermann">
+        </div>
+
+        <div class="input-group">
             <label>Straße & Hausnummer</label>
             <input type="text" id="address" placeholder="Musterstraße 1">
         </div>
@@ -133,6 +138,7 @@
                     document.getElementById("loading").style.display = "none";
 
                     if (data && !data.error) {
+                        if (data.name) document.getElementById("name").value = data.name;
                         if (data.address) document.getElementById("address").value = data.address;
                         if (data.postal) document.getElementById("postal").value = data.postal;
                         if (data.city) document.getElementById("city").value = data.city;
