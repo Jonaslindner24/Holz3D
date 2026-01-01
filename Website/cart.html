@@ -78,7 +78,7 @@
     </div>
 
     <script>
-        const authURL = "https://script.google.com/macros/s/AKfycbxgjACL76RUziovcWlqwI3UeU5aCB7odo3O5M6S0q0Wx3frH34iHiiRdQ6te3SxP5wdCg/exec";
+        const authURL = "https://script.google.com/macros/s/AKfycbxYN28qnjS1R0dfe9OEkzOAEF-nc2lCe8aoeCMiqzNRa0qc-E5PEHN8pghYHjssAUQXkg/exec";
 
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
@@ -114,31 +114,27 @@
         }
 
         function checkout() {
-            if (cart.length === 0) return alert("Warenkorb leer!");
-            const userEmail = localStorage.getItem("userEmail");
-            if (!userEmail) {
-                alert("Bitte logge dich zuerst ein.");
-                window.location.href = "login.html";
-                return;
-            }
+            // ... (bestehender Code für Warenkorb und Email)
 
-            const btn = document.querySelector(".checkout-btn");
-            btn.disabled = true;
-            btn.innerText = "Wird gesendet...";
+            // Wir holen die gespeicherten Profil-Daten (falls vorhanden)
+            // Wenn du sie in der Profile.html mit localStorage.setItem("userAddress", ...) gespeichert hast:
+            const userAddress = localStorage.getItem("userAddress") || "Keine Adresse hinterlegt";
+            const userPostal = localStorage.getItem("userPostal") || "";
+            const userCity = localStorage.getItem("userCity") || "";
 
-            const productNames = cart.map(item => item.name).join(", ");
-            const totalPrice = cart.reduce((sum, item) => sum + item.price, 0).toFixed(2);
+            const params = new URLSearchParams();
+            params.append('action', 'placeOrder');
+            params.append('email', userEmail);
+            params.append('items', productNames);
+            params.append('total', totalPrice);
 
-            // Wir nutzen FormData, das umgeht viele CORS-Probleme bei Google Apps Script
-            const formData = new FormData();
-            formData.append('action', 'placeOrder');
-            formData.append('email', userEmail);
-            formData.append('items', productNames);
-            formData.append('total', totalPrice);
+            params.append('address', userAddress);
+            params.append('postal', userPostal);
+            params.append('city', userCity);
 
             fetch(authURL, {
                 method: 'POST',
-                body: formData, // FormData statt URLSearchParams
+                body: params,
                 mode: 'no-cors'
             })
                 .then(() => {
