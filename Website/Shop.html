@@ -199,31 +199,76 @@
 
     <script>
 
-        let cart = [];
 
-        function addToCart(name, price) {
-            cart.push({ name: name, price: price });
-            alert(name + " wurde hinzugefügt! Warenkorb enthält jetzt " + cart.length + " Teile.");
-            // Hier können wir später die Anzeige des Warenkorbs aktualisieren
+        // 1. DEINE URL HIER EINTRAGEN
+        const authURL = "https://script.google.com/macros/s/AKfycbyHfc3hxvPT8aZvgIAVzVraRoyLEBPD-zPGvWhPmHI1bnMia9w4-Fp0Qo6fmax97Utv9Q/exec";
+
+        // Warenkorb Logik (Laden aus dem Speicher oder leeres Array)
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        // --- FUNKTION: PRODUKTE LADEN ---
+        function loadProducts() {
+            fetch(`${authURL}?action=getProducts`)
+                .then(res => res.text())
+                .then(text => {
+                    const products = JSON.parse(text);
+                    const grid = document.getElementById("productGrid");
+                    grid.innerHTML = "";
+
+                    products.forEach(product => {
+                        const card = document.createElement("div");
+                        card.className = "product-card";
+                        card.innerHTML = `
+                        <img src="${product.image}" alt="${product.name}">
+                        <h3>${product.name}</h3>
+                        <p>${product.description || ""}</p>
+                        <p class="price">${Number(product.price).toFixed(2)} €</p>
+                        <button class="add-btn" onclick="addToCart('${product.name}', ${product.price})">
+                            In den Warenkorb
+                        </button>
+                    `;
+                        grid.appendChild(card);
+                    });
+                })
+                .catch(err => {
+                    console.error("Fehler beim Laden der Produkte:", err);
+                    document.getElementById("productGrid").innerText = "Produkte konnten nicht geladen werden.";
+                });
         }
 
+        // --- FUNKTION: ZUM WARENKORB HINZUFÜGEN ---
+        function addToCart(name, price) {
+            cart.push({ name: name, price: price });
+            localStorage.setItem("cart", JSON.stringify(cart));
+            alert(name + " wurde zum Warenkorb hinzugefügt!");
+            updateCartCount();
+        }
+
+        function updateCartCount() {
+            const count = cart.length;
+            console.log("Items im Warenkorb:", count);
+            // Später können wir hier ein Icon auf der Seite aktualisieren
+            const cartLink = document.querySelector('a[href="cart.html"]');
+            if (cartLink) {
+                cartLink.innerText = `Warenkorb (${count})`;
+            }
+        }
+
+        // --- FUNKTION: LOGIN STATUS ---
         function checkLogin() {
             const statusText = document.getElementById("userStatus");
             const authBtn = document.getElementById("auth-btn");
             const userEmail = localStorage.getItem("userEmail");
 
             if (userEmail) {
-                // Zeige "Hallo, Name" als Link zu profile.html
                 const userName = userEmail.split('@')[0];
                 statusText.innerHTML = `Hallo, <a href="Profile.html" style="color: black; text-decoration: underline; cursor: pointer;">${userName}</a>`;
-
                 authBtn.innerText = "Logout";
                 authBtn.onclick = function () {
                     localStorage.clear();
                     location.reload();
                 };
             } else {
-                // Zeige nichts und biete Login an
                 statusText.innerText = "";
                 authBtn.innerText = "Login / Register";
                 authBtn.onclick = function () {
@@ -232,7 +277,12 @@
             }
         }
 
-        // WICHTIG: Die Funktion muss beim Laden der Seite auch aufgerufen werden!
-        window.onload = checkLogin;
+        // --- ALLES BEIM LADEN STARTEN ---
+        window.onload = function () {
+            checkLogin();
+            loadProducts();
+            updateCartCount();
+        };
+
     </script>
 </body>
