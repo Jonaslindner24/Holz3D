@@ -198,6 +198,15 @@
     <br><br><br>
 
     <script>
+
+        let cart = [];
+
+        function addToCart(name, price) {
+            cart.push({ name: name, price: price });
+            alert(name + " wurde hinzugefügt! Warenkorb enthält jetzt " + cart.length + " Teile.");
+            // Hier können wir später die Anzeige des Warenkorbs aktualisieren
+        }
+
         function checkLogin() {
             const statusText = document.getElementById("userStatus");
             const authBtn = document.getElementById("auth-btn");
