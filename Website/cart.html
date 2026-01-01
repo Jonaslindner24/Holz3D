@@ -78,7 +78,7 @@
     </div>
 
     <script>
-        const authURL = "https://script.google.com/macros/s/AKfycbzxsWhynORkuM7yMBFuhCz23FO6SuYPbMc3RiON_HzSt7Tt-JvG3PPD0QMQ5JCCj36y_A/exec";
+        const authURL = "https://script.google.com/macros/s/AKfycbwgYEXMfFa_4u41hjsQF24zyTbE20jYGLCCPDWba1AUStz1eF9jI8yUn_tQ_xLJOs3Tlw/exec";
 
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
@@ -116,7 +116,11 @@
         function checkout() {
             if (cart.length === 0) return alert("Warenkorb leer!");
             const userEmail = localStorage.getItem("userEmail");
-            if (!userEmail) return window.location.href = "login.html";
+            if (!userEmail) {
+                alert("Bitte logge dich zuerst ein.");
+                window.location.href = "login.html";
+                return;
+            }
 
             const btn = document.querySelector(".checkout-btn");
             btn.disabled = true;
@@ -125,42 +129,35 @@
             const productNames = cart.map(item => item.name).join(", ");
             const totalPrice = cart.reduce((sum, item) => sum + item.price, 0).toFixed(2);
 
-            const params = new URLSearchParams();
-            params.append('action', 'placeOrder');
-            params.append('email', userEmail);
-            params.append('items', productNames);
-            params.append('total', totalPrice);
+            // Wir nutzen FormData, das umgeht viele CORS-Probleme bei Google Apps Script
+            const formData = new FormData();
+            formData.append('action', 'placeOrder');
+            formData.append('email', userEmail);
+            formData.append('items', productNames);
+            formData.append('total', totalPrice);
 
-            // Wir benutzen 'no-cors' als Fallback-Strategie
             fetch(authURL, {
                 method: 'POST',
-                mode: 'no-cors', // Dies verhindert den CORS-Fehler im Browser
-                body: params
+                body: formData, // FormData statt URLSearchParams
+                mode: 'no-cors'
             })
                 .then(() => {
-                    // Da bei 'no-cors' die Antwort nicht gelesen werden kann, 
-                    // gehen wir davon aus, dass es bei Status 200 geklappt hat.
-                    alert("Bestellung wurde abgeschickt! Bitte prüfe deine E-Mails.");
+                    // Bei no-cors wissen wir nicht sicher ob es klappte, 
+                    // aber wenn fetch nicht in catch landet, wurde es abgeschickt.
+                    alert("Bestellung abgeschickt! Prüfe bitte in 1-2 Minuten deine E-Mails.");
                     localStorage.removeItem("cart");
                     window.location.href = "main.html";
                 })
                 .catch(err => {
                     console.error("Fehler:", err);
-                    alert("Verbindung fehlgeschlagen.");
+                    alert("Verbindung zum Server fehlgeschlagen.");
                     btn.disabled = false;
                     btn.innerText = "Jetzt zahlungspflichtig bestellen";
                 });
-        
-
-        function resetButton(btn) {
-            btn.disabled = false;
-            btn.innerText = "Jetzt zahlungspflichtig bestellen";
-        }
         }
 
         window.onload = renderCart;
     </script>
-
 </body>
 
 </html>
