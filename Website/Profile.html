@@ -99,7 +99,7 @@
 
         <div class="input-group">
             <label>Straße & Hausnummer</label>
-            <input type="text" id="test" placeholder="Musterstraße 1">
+            <input type="text" id="home" placeholder="Musterstraße 1">
         </div>
 
         <div class="input-group">
@@ -139,7 +139,7 @@
 
                     if (data && !data.error) {
                         if (data.name) document.getElementById("name").value = data.name;
-                        if (data.test) document.getElementById("address").value = data.test;
+                        if (data.home) document.getElementById("address").value = data.home;
                         if (data.postal) document.getElementById("postal").value = data.postal;
                         if (data.city) document.getElementById("city").value = data.city;
                     } else {
@@ -162,7 +162,7 @@
             params.append('action', 'updateProfile');
             params.append('email', email);
             params.append('name', document.getElementById("name").value);
-            params.append('address', document.getElementById("test").value); // Name geändert zu 'address'
+            params.append('address', document.getElementById("home").value); // Name geändert zu 'address'
             params.append('postal', document.getElementById("postal").value);
             params.append('city', document.getElementById("city").value);
 
