@@ -168,24 +168,28 @@
             params.append('address', document.getElementById("address").value);
             params.append('postal', document.getElementById("postal").value);
             params.append('city', document.getElementById("city").value);
+            localStorage.setItem("userAddress", document.getElementById("address").value);
+            localStorage.setItem("userPostal", document.getElementById("hh").value);
+            localStorage.setItem("userCity", document.getElementById("city").value);
+        
 
-            fetch(authURL, {
-                method: 'POST',
-                body: params
+        fetch(authURL, {
+            method: 'POST',
+            body: params
+        })
+            .then(res => res.text())
+            .then(response => {
+                if (response.trim() === "SUCCESS_UPDATE") {
+                    alert("Daten erfolgreich gespeichert!");
+                } else {
+                    alert("Fehler: " + response);
+                }
             })
-                .then(res => res.text())
-                .then(response => {
-                    if (response.trim() === "SUCCESS_UPDATE") {
-                        alert("Daten erfolgreich gespeichert!");
-                    } else {
-                        alert("Fehler: " + response);
-                    }
-                })
-                .catch(err => alert("Serverfehler: " + err))
-                .finally(() => {
-                    saveBtn.disabled = false;
-                    saveBtn.innerText = "Daten speichern";
-                });
+            .catch(err => alert("Serverfehler: " + err))
+            .finally(() => {
+                saveBtn.disabled = false;
+                saveBtn.innerText = "Daten speichern";
+            });
         }
     </script>
 </body>
