@@ -118,7 +118,7 @@
     </div>
 
     <script>
-        const authURL = "https://script.google.com/macros/s/AKfycbzvtScjcIP-40W2fWL53fdIH823bhXdothYuq6e5RouSFX8nZzypK9ArvXX4HHLnBcOag/exec";
+        const authURL = "https://script.google.com/macros/s/AKfycbwGNfNWJ4UIzNxqcq2uaVm1qSpAvC0Gy469isLHLqYbwrOMNbCE-DoJKaVPvDDtwRFD_A/exec";
         const email = localStorage.getItem("userEmail");
 
         window.onload = function () {
@@ -128,18 +128,21 @@
                 return;
             }
 
-            // Wir laden die Daten als TEXT
             fetch(`${authURL}?action=getUserData&email=${encodeURIComponent(email)}`)
-                .then(res => res.text()) // WICHTIG: Erst als Text lesen
+                .then(res => res.text())
                 .then(text => {
                     console.log("Rohdaten vom Server:", text);
-                    const data = JSON.parse(text); // Dann manuell in JSON umwandeln
+                    const data = JSON.parse(text);
 
                     document.getElementById("loading").style.display = "none";
 
                     if (data && !data.error) {
+                        // Hier die Korrekturen für die IDs:
                         if (data.name) document.getElementById("name").value = data.name;
-                        if (data.home) document.getElementById("address").value = data.home;
+
+                        // WICHTIG: Das Feld heißt bei dir "home", nicht "address"
+                        if (data.address) document.getElementById("home").value = data.address;
+
                         if (data.postal) document.getElementById("postal").value = data.postal;
                         if (data.city) document.getElementById("city").value = data.city;
                     } else {
@@ -152,7 +155,6 @@
                 });
         };
 
-        // Die saveProfile Funktion bleibt wie sie ist (POST Methode)
         function saveProfile() {
             const saveBtn = document.getElementById("saveBtn");
             saveBtn.disabled = true;
@@ -162,7 +164,10 @@
             params.append('action', 'updateProfile');
             params.append('email', email);
             params.append('name', document.getElementById("name").value);
-            params.append('address', document.getElementById("home").value); // Name geändert zu 'address'
+
+            // Auch hier: Wert aus "home" nehmen und als "address" ans Script senden
+            params.append('address', document.getElementById("home").value);
+
             params.append('postal', document.getElementById("postal").value);
             params.append('city', document.getElementById("city").value);
 
