@@ -104,7 +104,7 @@
 
         <div class="input-group">
             <label>Postleitzahl</label>
-            <input type="text" id="postal" placeholder="12345">
+            <input type="text" id="hh" placeholder="12345">
         </div>
 
         <div class="input-group">
@@ -140,7 +140,7 @@
                     if (data && !data.error) {
                         if (data.name) document.getElementById("name").value = data.name;
                         if (data.address) document.getElementById("home").value = data.address;
-                        if (data.postal) document.getElementById("postal").value = data.postal;
+                        if (data.postal) document.getElementById("postal").value = data.hh;
                         if (data.city) document.getElementById("city").value = data.city;
                     } else {
                         document.getElementById("loading").innerText = "Noch keine Daten vorhanden.";
