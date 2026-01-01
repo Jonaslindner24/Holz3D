@@ -208,31 +208,42 @@
 
         // --- FUNKTION: PRODUKTE LADEN ---
         function loadProducts() {
-            fetch(`${authURL}?action=getProducts`)
-                .then(res => res.text())
-                .then(text => {
-                    const products = JSON.parse(text);
+            // Wir fügen keine speziellen Header hinzu, damit Google nicht blockiert
+            fetch(`${authURL}?action=getProducts`, {
+                method: 'GET',
+                redirect: 'follow' // WICHTIG: Erlaubt Google die Umleitung zur Datenquelle
+            })
+                .then(res => {
+                    if (!res.ok) throw new Error('Netzwerk-Antwort war nicht ok');
+                    return res.json(); // Direkt als JSON interpretieren
+                })
+                .then(products => {
                     const grid = document.getElementById("productGrid");
                     grid.innerHTML = "";
+
+                    if (products.length === 0) {
+                        grid.innerHTML = "<p>Aktuell keine Produkte im Shop vorhanden.</p>";
+                        return;
+                    }
 
                     products.forEach(product => {
                         const card = document.createElement("div");
                         card.className = "product-card";
                         card.innerHTML = `
-                        <img src="${product.image}" alt="${product.name}">
-                        <h3>${product.name}</h3>
-                        <p>${product.description || ""}</p>
-                        <p class="price">${Number(product.price).toFixed(2)} €</p>
-                        <button class="add-btn" onclick="addToCart('${product.name}', ${product.price})">
-                            In den Warenkorb
-                        </button>
-                    `;
+                <img src="${product.image || 'https://via.placeholder.com/150'}" alt="${product.name}">
+                <h3>${product.name}</h3>
+                <p>${product.description || ""}</p>
+                <p class="price">${Number(product.price).toFixed(2)} €</p>
+                <button class="add-btn" onclick="addToCart('${product.name}', ${product.price})">
+                    In den Warenkorb
+                </button>
+            `;
                         grid.appendChild(card);
                     });
                 })
                 .catch(err => {
                     console.error("Fehler beim Laden der Produkte:", err);
-                    document.getElementById("productGrid").innerText = "Produkte konnten nicht geladen werden.";
+                    document.getElementById("productGrid").innerText = "Produkte konnten nicht geladen werden. Prüfe die Internetverbindung.";
                 });
         }
 
