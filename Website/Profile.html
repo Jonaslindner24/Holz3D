@@ -118,7 +118,7 @@
     </div>
 
     <script>
-        const authURL = "https://script.google.com/macros/s/AKfycbwutUX4-pDc5fStwjeGZSJtPegufXcHbw5H8bCjstOJmJqnEdY2DRSWQcwkFMpMd0Yd1g/exec";
+        const authURL = "https://script.google.com/macros/s/AKfycbzdTxeALiueAWxYzpfNzGQJsT2pBSIcO-y90BmHKcnU84voEBpkqG_ZRkutNCVy3Q8aqw/exec";
         const email = localStorage.getItem("userEmail");
 
         window.onload = function () {
@@ -139,7 +139,7 @@
 
                     if (data && !data.error) {
                         if (data.name) document.getElementById("name").value = data.name;
-                        if (data.test) document.getElementById("address").value = data.address;
+                        if (data.home) document.getElementById("address").value = data.address;
                         if (data.postal) document.getElementById("postal").value = data.postal;
                         if (data.city) document.getElementById("city").value = data.city;
                     } else {
