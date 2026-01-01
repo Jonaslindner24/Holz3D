@@ -94,7 +94,7 @@
 
         <div class="input-group">
             <label>Name</label>
-            <input type="text" id="name" placeholder="Max mustermann">
+            <input type="text" id="name" placeholder="Max Mustermann">
         </div>
 
         <div class="input-group">
@@ -104,7 +104,7 @@
 
         <div class="input-group">
             <label>Postleitzahl</label>
-            <input type="text" id="hh" placeholder="12345">
+            <input type="text" id="postal" placeholder="12345">
         </div>
 
         <div class="input-group">
@@ -131,16 +131,17 @@
             fetch(`${authURL}?action=getUserData&email=${encodeURIComponent(email)}`)
                 .then(res => {
                     if (!res.ok) throw new Error('Netzwerk-Antwort war nicht ok');
-                    return res.json(); // Direkt als JSON interpretieren
+                    return res.json();
                 })
                 .then(data => {
                     console.log("Daten erhalten:", data);
                     document.getElementById("loading").style.display = "none";
 
                     if (data && !data.error) {
+                        // IDs müssen exakt mit dem HTML übereinstimmen!
                         if (data.name) document.getElementById("name").value = data.name;
-                        if (data.address) document.getElementById("home").value = data.address;
-                        if (data.postal) document.getElementById("postal").value = data.hh;
+                        if (data.address) document.getElementById("address").value = data.address;
+                        if (data.postal) document.getElementById("postal").value = data.postal;
                         if (data.city) document.getElementById("city").value = data.city;
                     } else {
                         document.getElementById("loading").innerText = "Noch keine Daten vorhanden.";
@@ -148,7 +149,7 @@
                 })
                 .catch(err => {
                     console.error("Fehler beim Laden:", err);
-                    document.getElementById("loading").innerText = "Fehler: Verbindung blockiert (CORS) oder Serverfehler.";
+                    document.getElementById("loading").innerText = "Fehler beim Laden der Daten.";
                 });
         };
 
@@ -161,10 +162,7 @@
             params.append('action', 'updateProfile');
             params.append('email', email);
             params.append('name', document.getElementById("name").value);
-
-            // Auch hier: Wert aus "home" nehmen und als "address" ans Script senden
-            params.append('address', document.getElementById("home").value);
-
+            params.append('address', document.getElementById("address").value);
             params.append('postal', document.getElementById("postal").value);
             params.append('city', document.getElementById("city").value);
 
