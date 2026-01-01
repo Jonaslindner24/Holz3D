@@ -114,39 +114,53 @@
         }
 
         function checkout() {
-            // ... (bestehender Code für Warenkorb und Email)
+            // 1. Warenkorb prüfen
+            if (cart.length === 0) return alert("Warenkorb leer!");
 
-            // Wir holen die gespeicherten Profil-Daten (falls vorhanden)
-            // Wenn du sie in der Profile.html mit localStorage.setItem("userAddress", ...) gespeichert hast:
-            const userAddress = localStorage.getItem("userAddress") || "Keine Adresse hinterlegt";
+            // 2. userEmail definieren und aus dem Speicher holen
+            const userEmail = localStorage.getItem("userEmail"); // <--- Das hat gefehlt!
+
+            // 3. Prüfen, ob der Nutzer eingeloggt ist
+            if (!userEmail) {
+                alert("Bitte logge dich zuerst ein.");
+                window.location.href = "login.html";
+                return;
+            }
+
+            const btn = document.querySelector(".checkout-btn");
+            btn.disabled = true;
+            btn.innerText = "Wird gesendet...";
+
+            // 4. Adressdaten aus dem Speicher holen
+            const userAddress = localStorage.getItem("userAddress") || "Keine Adresse";
             const userPostal = localStorage.getItem("userPostal") || "";
             const userCity = localStorage.getItem("userCity") || "";
 
+            const productNames = cart.map(item => item.name).join(", ");
+            const totalPrice = cart.reduce((sum, item) => sum + item.price, 0).toFixed(2);
+
             const params = new URLSearchParams();
             params.append('action', 'placeOrder');
-            params.append('email', userEmail);
+            params.append('email', userEmail); // Jetzt ist userEmail bekannt
             params.append('items', productNames);
             params.append('total', totalPrice);
-
             params.append('address', userAddress);
             params.append('postal', userPostal);
             params.append('city', userCity);
 
             fetch(authURL, {
                 method: 'POST',
-                body: params,
-                mode: 'no-cors'
+                mode: 'no-cors',
+                body: params
             })
                 .then(() => {
-                    // Bei no-cors wissen wir nicht sicher ob es klappte, 
-                    // aber wenn fetch nicht in catch landet, wurde es abgeschickt.
-                    alert("Bestellung abgeschickt! Prüfe bitte in 1-2 Minuten deine E-Mails.");
+                    alert("Bestellung erfolgreich abgeschickt!");
                     localStorage.removeItem("cart");
                     window.location.href = "main.html";
                 })
                 .catch(err => {
                     console.error("Fehler:", err);
-                    alert("Verbindung zum Server fehlgeschlagen.");
+                    alert("Fehler beim Senden.");
                     btn.disabled = false;
                     btn.innerText = "Jetzt zahlungspflichtig bestellen";
                 });
