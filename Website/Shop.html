@@ -201,27 +201,28 @@
 
 
         // 1. DEINE URL HIER EINTRAGEN
-        const authURL = "https://script.google.com/macros/s/AKfycbyHfc3hxvPT8aZvgIAVzVraRoyLEBPD-zPGvWhPmHI1bnMia9w4-Fp0Qo6fmax97Utv9Q/exec";
+        const authURL = "https://script.google.com/macros/s/AKfycbwL1ay_ZuZyuZlTCpGhdM5i4wm_F9V6s5yAfVyaEEmHMq2QAmJ476APDPup4bi2W7R9uA/exec";
 
         // Warenkorb Logik (Laden aus dem Speicher oder leeres Array)
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
         // --- FUNKTION: PRODUKTE LADEN ---
         function loadProducts() {
-            // Wir fügen keine speziellen Header hinzu, damit Google nicht blockiert
-            fetch(`${authURL}?action=getProducts`, {
-                method: 'GET',
-                redirect: 'follow' // WICHTIG: Erlaubt Google die Umleitung zur Datenquelle
-            })
-                .then(res => {
-                    if (!res.ok) throw new Error('Netzwerk-Antwort war nicht ok');
-                    return res.json(); // Direkt als JSON interpretieren
+            // Wir nutzen die URL direkt ohne extra Header, um CORS-Probleme zu vermeiden
+            fetch(`${authURL}?action=getProducts`)
+                .then(response => {
+                    // Google Script antwortet oft mit einer Umleitung, 
+                    // Fetch folgt dieser automatisch bei Standardeinstellungen.
+                    if (!response.ok) {
+                        throw new Error('Netzwerk-Antwort war nicht ok');
+                    }
+                    return response.json();
                 })
                 .then(products => {
                     const grid = document.getElementById("productGrid");
                     grid.innerHTML = "";
 
-                    if (products.length === 0) {
+                    if (!products || products.length === 0) {
                         grid.innerHTML = "<p>Aktuell keine Produkte im Shop vorhanden.</p>";
                         return;
                     }
@@ -230,20 +231,22 @@
                         const card = document.createElement("div");
                         card.className = "product-card";
                         card.innerHTML = `
-                <img src="${product.image || 'https://via.placeholder.com/150'}" alt="${product.name}">
-                <h3>${product.name}</h3>
-                <p>${product.description || ""}</p>
-                <p class="price">${Number(product.price).toFixed(2)} €</p>
-                <button class="add-btn" onclick="addToCart('${product.name}', ${product.price})">
-                    In den Warenkorb
-                </button>
-            `;
+                    <img src="${product.image || 'https://via.placeholder.com/150'}" alt="${product.name}">
+                    <h3>${product.name}</h3>
+                    <p>${product.description || ""}</p>
+                    <p class="price">${Number(product.price).toFixed(2)} €</p>
+                    <button class="add-btn" onclick="addToCart('${product.name}', ${product.price})">
+                        In den Warenkorb
+                    </button>
+                `;
                         grid.appendChild(card);
                     });
                 })
                 .catch(err => {
-                    console.error("Fehler beim Laden der Produkte:", err);
-                    document.getElementById("productGrid").innerText = "Produkte konnten nicht geladen werden. Prüfe die Internetverbindung.";
+                    console.error("Fehler beim Laden:", err);
+                    document.getElementById("productGrid").innerHTML =
+                        `<p style="color:red;">Fehler beim Laden der Produkte. <br> 
+                Bitte stelle sicher, dass das Tabellenblatt "Produkte" existiert und Daten enthält.</p>`;
                 });
         }
 
