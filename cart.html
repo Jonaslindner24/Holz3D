@@ -124,11 +124,41 @@
                 return;
             }
 
-            // Hier senden wir später die Daten an dein Google Script
-            alert("Vielen Dank! Deine Bestellung über " + cart.length + " Artikel wurde simuliert.");
-            // cart = [];
-            // localStorage.setItem("cart", JSON.stringify(cart));
-            // renderCart();
+            const btn = document.querySelector(".checkout-btn");
+            btn.disabled = true;
+            btn.innerText = "Wird gesendet...";
+
+            // Wir fassen die Produktnamen für die Tabelle zusammen
+            const productNames = cart.map(item => item.name).join(", ");
+            const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
+
+            const params = new URLSearchParams();
+            params.append('action', 'placeOrder');
+            params.append('email', userEmail);
+            params.append('items', productNames);
+            params.append('total', totalPrice.toFixed(2));
+
+            fetch(authURL, { // Nutze hier die gleiche URL wie im Shop!
+                method: 'POST',
+                body: params
+            })
+                .then(res => res.text())
+                .then(response => {
+                    if (response.trim() === "ORDER_SUCCESS") {
+                        alert("Vielen Dank! Deine Bestellung wurde gespeichert.");
+                        localStorage.removeItem("cart"); // Warenkorb leeren
+                        window.location.href = "main.html";
+                    } else {
+                        alert("Fehler: " + response);
+                        btn.disabled = false;
+                        btn.innerText = "Jetzt zahlungspflichtig bestellen";
+                    }
+                })
+                .catch(err => {
+                    console.error("Fehler:", err);
+                    alert("Verbindung zum Server fehlgeschlagen.");
+                    btn.disabled = false;
+                });
         }
 
         window.onload = renderCart;
