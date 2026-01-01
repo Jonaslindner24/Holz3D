@@ -78,7 +78,7 @@
     </div>
 
     <script>
-        const authURL = "https://script.google.com/macros/s/AKfycbwZJRbyLIF8bJk9KBu3WvD9354_G4tGOf0L1N4ypM3V8-Y2-SJeIkGKG2_IJH4F-bIJsQ/exec";
+        const authURL = "https://script.google.com/macros/s/AKfycbwgwWo2AxzsbzzAg9Gjz6CD61o7sX2CVjdcrVgJZ6ux4KxSIYcR5VvR3EsmFljMI4M2Pg/exec";
 
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
@@ -140,7 +140,7 @@
             params.append('items', productNames);
             params.append('total', totalPrice.toFixed(2));
 
-            fetch(authURL, { 
+            fetch(authURL, {
                 method: 'POST',
                 body: params
             })
