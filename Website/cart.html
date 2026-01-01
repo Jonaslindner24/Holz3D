@@ -140,7 +140,7 @@
             params.append('items', productNames);
             params.append('total', totalPrice.toFixed(2));
 
-            fetch(authURL, { // Nutze hier die gleiche URL wie im Shop!
+            fetch(authURL, { 
                 method: 'POST',
                 body: params
             })
