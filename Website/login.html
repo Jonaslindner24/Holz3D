@@ -67,10 +67,10 @@
     <div class="auth-card">
         <h2 id="title">Login</h2>
         <form id="authForm">
-            <input type="text" id="regName" placeholder="Dein Name" style="display:none;">
+            <input type="text" id="regName" placeholder="Your name" style="display:none;">
             <input type="email" id="email" placeholder="Email" required>
-            <input type="password" id="password" placeholder="Passwort" required>
-            <button type="submit" id="btnText">Einloggen</button>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit" id="btnText">Login</button>
         </form>
         <div class="toggle" id="toggleBtn" onclick="switchMode()">Noch kein Account? Registrieren</div>
         <br>
@@ -78,7 +78,7 @@
     </div>
 
     <script>
-        // DEINE URL (Stelle sicher, dass dies die URL vom AUTH-SCRIPT ist)
+       
         const scriptURL = "https://script.google.com/macros/s/AKfycbx8qMQVx5771W_x6pxxiD4lmEplGck9yzHkIL9JEFE7wCjXXTuo2Jzge6u8T9HL9tgxtw/exec";
         let mode = "login";
 
@@ -101,11 +101,11 @@
             const passValue = document.getElementById("password").value;
             const nameValue = document.getElementById("regName").value;
 
-            // Passwort verschlüsseln
+            
             const hashedPassword = CryptoJS.SHA256(passValue).toString();
 
             const params = new URLSearchParams();
-            params.append('action', mode); // Nutzt automatisch "login" oder "signup"
+            params.append('action', mode); 
             params.append('email', emailValue);
             params.append('password', hashedPassword);
 
@@ -125,7 +125,6 @@
                         localStorage.setItem("userEmail", emailValue);
                         alert(mode === "login" ? "Login erfolgreich!" : "Account erstellt!");
 
-                        // NEU: Nach Signup zur Profil-Vervollständigung, nach Login zur Main
                         window.location.href = (mode === "signup") ? "Profile.html" : "main.html";
                     } else {
                         alert("Fehler: " + cleanResponse);

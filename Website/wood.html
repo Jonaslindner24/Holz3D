@@ -264,7 +264,7 @@
 
                 <button type="submit" id="submitBtn"
                     style="padding:  10px 20px; background: black; color: white; border: none; cursor: pointer;">
-                    Kostenpflichtig bestellen
+                    order for a fee
                 </button>
 
             </table>
@@ -282,16 +282,15 @@
 
 
     <script>
-        // URL 1: Nur für das Speichern der Bestellung (das Script mit dem Datei-Upload)
+       
         const orderScriptURL = 'https://script.google.com/macros/s/AKfycbw8OHhkbGaoa0CY-5-nybLp07kmTNsxCCimjmiVDBfT8nVyeRaGkh_FiIfKjbkrruEDCQ/exec';
 
-        // URL 2: Nur für die Nutzerdaten (Login-Check und Adresse laden)
+        
         const authScriptURL = 'https://script.google.com/macros/s/AKfycbx5Wpqxcoeh_g9oBg4pNP1UgFwO1f3C7TDlUibBMXu1l00qINFK-vSLLe5ARa6H3ROSOQ/exec';
 
         const form = document.getElementById('orderForm');
         const btn = document.getElementById('submitBtn');
 
-        // --- 1. FUNKTION: BESTELLUNG SENDEN ---
         form.addEventListener('submit', e => {
             e.preventDefault();
             btn.disabled = true;
@@ -315,7 +314,6 @@
                 formData.append('city', form.city.value);
                 formData.append('action', 'order');
 
-                // Hier wird das ORDER-Script genutzt
                 fetch(orderScriptURL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -333,8 +331,7 @@
             reader.readAsDataURL(file);
         });
 
-        // --- 2. FUNKTION: LOGIN & ADRESSE LADEN ---
-        // --- LOGIN & DATEN LADEN IN EINEM ---
+      
         function initPage() {
             const statusText = document.getElementById("userStatus");
             const authBtn = document.getElementById("auth-btn");
@@ -351,10 +348,8 @@
                     location.reload();
                 };
 
-                // 2. E-Mail im Formular schon mal eintragen
                 document.querySelector('input[name="email"]').value = userEmail;
 
-                // 3. Restliche Profildaten (inkl. Name) per Fetch laden
                 fetch(`${authScriptURL}?action=getUserData&email=${encodeURIComponent(userEmail)}`)
                     .then(res => res.text())
                     .then(text => {
@@ -383,7 +378,7 @@
             const userEmail = localStorage.getItem("userEmail");
 
             if (userEmail) {
-                // Zeige "Hallo, Name" als Link zu profile.html
+                
                 if (data.name) {
                     statusText.innerHTML = `Hallo, <a href="Profile.html" style="color: black; text-decoration: underline;">${data.name}</a>`;
                 }
@@ -394,7 +389,7 @@
                     location.reload();
                 };
             } else {
-                // Zeige nichts und biete Login an
+               
                 statusText.innerText = "";
                 authBtn.innerText = "Login / Register";
                 authBtn.onclick = function () {
@@ -403,7 +398,7 @@
             }
         }
 
-        // Nur EINMAL window.onload definieren!
+       
         window.onload = initPage;
     </script>
 

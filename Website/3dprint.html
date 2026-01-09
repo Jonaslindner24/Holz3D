@@ -263,7 +263,7 @@
 
             <button type="submit" id="submitBtn"
                 style="padding:  10px 20px; background: black; color: white; border: none; cursor: pointer;">
-                Kostenpflichtig bestellen
+                order for a fee
             </button>
 
             </table>
@@ -312,7 +312,6 @@
                 formData.append('city', form.city.value);
                 formData.append('action', 'order');
 
-                // Hier wird das ORDER-Script genutzt
                 fetch(orderScriptURL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -337,7 +336,7 @@
             const userEmail = localStorage.getItem("userEmail");
 
             if (userEmail) {
-                // 1. Status oben rechts anzeigen
+       
                 const userNameDisplay = userEmail.split('@')[0];
                 statusText.innerHTML = `Hallo, <a href="Profile.html" style="color: black; text-decoration: underline; cursor: pointer;">${userNameDisplay}</a>`;
 
@@ -354,7 +353,7 @@
                     .then(text => {
                         const data = JSON.parse(text);
                         if (data && !data.error) {
-                            // Namen und Adresse in die Formularfelder eintragen
+                           
                             if (data.name) document.querySelector('input[name="name"]').value = data.name;
                             if (data.address) document.querySelector('input[name="test"]').value = data.address;
                             if (data.postal) document.querySelector('input[name="postal"]').value = data.postal;
@@ -396,7 +395,6 @@
             }
         }
 
-        // Nur EINMAL window.onload definieren!
         window.onload = initPage;
     </script>
 
